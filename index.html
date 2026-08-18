@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alternative Learning System (ALS) — Culaba District, Division of Biliran</title>
+    <meta name="description" content="Ang Alternative Learning System (ALS) ay isang programang pang-edukasyon sa Culaba, Biliran para sa mga out-of-school youth at adults.">
+    <script>
+      (function() {
+          const size = localStorage.getItem('fontSize') || '16';
+          document.documentElement.style.fontSize = size + 'px';
+          document.documentElement.style.setProperty('--font-scale', size / 16);
+      })();
+    </script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    
+    <!-- Animate On Scroll (AOS) -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+    <style>
+        body {
+            zoom: var(--font-scale, 1);
+        }
+        /* ══════════════════════════════════════════════════════════
+           DESIGN SYSTEM & VARIABLES — Premium ALS Theme v2
+           ══════════════════════════════════════════════════════════ */
+        :root {
+            --indigo:       #4f46e5;
+            --indigo-dark:  #3730a3;
+            --indigo-light: #818cf8;
+            --teal:         #0d9488;
+            --teal-light:   #2dd4bf;
+            --amber:        #f59e0b;
+            --rose:         #f43f5e;
+
+            --primary:      var(--indigo);
+            --primary-rgb:  79, 70, 229;
+            --accent:       var(--teal);
+            --accent-rgb:   13, 148, 136;
+
+            --navy-950:  #0b0f1a;
+            --navy-900:  #0f172a;
+            --navy-800:  #1e293b;
+            --navy-700:  #334155;
+            --navy-600:  #475569;
+            --navy-400:  #94a3b8;
+            --navy-200:  #e2e8f0;
+            --navy-100:  #f1f5f9;
+            --navy-50:   #f8fafc;
+
+            --bg:         #f5f7fb;
+            --surface:    #ffffff;
+            --surface-2:  #fafbff;
+
+            --grad-primary:  linear-gradient(135deg, var(--indigo) 0%, #7c3aed 100%);
+            --grad-accent:   linear-gradient(135deg, var(--teal) 0%, var(--teal-light) 100%);
+            --grad-hero:     linear-gradient(135deg, #090a0f 0%, #0d1222 45%, #081622 100%);
+            --grad-mesh:     radial-gradient(ellipse 80% 60% at 70% 0%, rgba(79,70,229,.22) 0%, transparent 70%),
+                             radial-gradient(ellipse 60% 50% at 10% 90%, rgba(13,148,136,.16) 0%, transparent 70%);
+
+            --shadow-xs:  0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.03);
+            --shadow-sm:  0 4px 12px rgba(0,0,0,.05), 0 2px 6px rgba(0,0,0,.04);
+            --shadow-md:  0 10px 30px rgba(0,0,0,.07), 0 4px 12px rgba(0,0,0,.05);
+            --shadow-lg:  0 20px 50px rgba(0,0,0,.09), 0 8px 24px rgba(0,0,0,.06);
+            --shadow-xl:  0 35px 70px rgba(0,0,0,.13), 0 15px 35px rgba(0,0,0,.08);
+            --shadow-glow-primary: 0 12px 40px -4px rgba(79,70,229,.35);
+            --shadow-glow-accent:  0 12px 40px -4px rgba(13,148,136,.30);
+
+            --border: rgba(15,23,42,.07);
+            --radius-sm:  8px;
+            --radius-md:  14px;
+            --radius-lg:  22px;
+            --radius-xl:  32px;
+            --radius-full: 9999px;
+            --ease:    cubic-bezier(.16,1,.3,1);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; font-size: 16px; }
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            background: linear-gradient(160deg, #f0f4ff 0%, #e8fdf5 50%, #f5f0ff 100%) !important;
+            background-attachment: fixed !important;
+            color: var(--navy-900);
+            overflow-x: hidden;
+            letter-spacing: -.01em;
+        }
+
+        ::-webkit-scrollbar { width: 7px; }
+        ::-webkit-scrollbar-track { background: var(--navy-100); }
+        ::-webkit-scrollbar-thumb { background: var(--indigo); border-radius: 6px; }
+
+        .text-navy  { color: var(--navy-900) !important; }
+        .text-muted { color: var(--navy-400) !important; }
+        .fw-extrabold { font-weight: 800 !important; }
+
+        .grad-text {
+            background: var(--grad-primary);
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grad-text-accent {
+            background: linear-gradient(135deg, var(--teal) 0%, var(--indigo-light) 100%);
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-tag {
+            display: inline-flex; align-items: center; gap: 7px;
+            font-size: .72rem; font-weight: 800; letter-spacing: 1.4px;
+            text-transform: uppercase; padding: 6px 15px;
+            border-radius: var(--radius-full); margin-bottom: 18px;
+            background: rgba(79,70,229,.08); color: var(--indigo);
+            border: 1.5px solid rgba(79,70,229,.14);
+        }
+        .section-tag-green { background: rgba(13,148,136,.08); color: var(--teal); border-color: rgba(13,148,136,.15); }
+
+        .hover-lift { transition: transform .4s var(--ease), box-shadow .4s var(--ease); }
+        .hover-lift:hover { transform: translateY(-7px); box-shadow: var(--shadow-xl); }
+
+        .btn-primary-custom {
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            background: var(--grad-primary); color: #fff !important; font-weight: 700; font-size: .95rem;
+            padding: 14px 32px; border-radius: var(--radius-md); border: none;
+            box-shadow: var(--shadow-glow-primary); transition: all .3s var(--ease); text-decoration: none;
+        }
+        .btn-primary-custom:hover { transform: translateY(-3px); box-shadow: 0 18px 40px -6px rgba(79,70,229,.45); }
+
+        .btn-secondary-custom {
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            background: rgba(255,255,255,.9); color: var(--navy-900) !important; font-weight: 700; font-size: .95rem;
+            padding: 13px 30px; border-radius: var(--radius-md); border: 1.5px solid var(--border);
+            box-shadow: var(--shadow-xs); transition: all .3s var(--ease); text-decoration: none;
+        }
+        .btn-secondary-custom:hover { background: var(--surface); border-color: rgba(79,70,229,.25); transform: translateY(-3px); box-shadow: var(--shadow-md); }
+
+        #main-nav {
+            position: sticky; top: 0; z-index: 1030; padding: 14px 0;
+            background: rgba(255,255,255,.88); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid rgba(15,23,42,.06); box-shadow: 0 2px 20px rgba(0,0,0,.03); transition: all .4s var(--ease);
+        }
+        #main-nav.scrolled { padding: 10px 0; background: rgba(255,255,255,.96); box-shadow: 0 8px 32px rgba(0,0,0,.06); }
+
+        .navbar-brand { font-weight: 800; font-size: 1.1rem; color: var(--navy-900) !important; line-height: 1.2; }
+        .navbar-brand strong { color: var(--indigo); }
+        .nav-link { font-weight: 600; color: var(--navy-600) !important; padding: 7px 14px !important; border-radius: var(--radius-sm); transition: all .25s ease; font-size: .875rem; white-space: nowrap; }
+        .nav-link:hover, .nav-link.active { color: var(--indigo) !important; }
+
+        #home-section {
+            position: relative; background: var(--grad-hero); color: #fff; min-height: 88vh;
+            display: flex; align-items: center; padding: 80px 0 100px; overflow: hidden;
+        }
+        .hero-mesh { position: absolute; inset: 0; background: var(--grad-mesh); pointer-events: none; }
+        .hero-title { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 900; line-height: 1.12; color: #fff; margin-bottom: 22px; }
+
+        .hero-image-frame {
+            position: relative; border-radius: 28px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.5);
+            aspect-ratio: 16/10; width: 100%; max-width: 600px;
+        }
+        .hero-image-frame video { width: 100%; height: 100%; object-fit: cover; }
+
+        .logo-placeholder { display: inline-block; width: 90px; height: 90px; border-radius: 50%; position: relative; flex-shrink: 0; }
+        #flying-logo {
+            width: 100px; height: 100px; border-radius: 50%; border: 3px solid rgba(255,255,255,.9);
+            box-shadow: 0 8px 32px rgba(79,70,229,.2); background: linear-gradient(135deg, #fff 0%, #f9fafb 100%);
+            display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 6px;
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 500;
+        }
+
+        #stats-strip { position: relative; padding: 0 0 8px; margin-top: -60px; z-index: 5; }
+        .stats-panel { background: var(--surface); border-radius: var(--radius-xl); border: 1px solid var(--border); box-shadow: var(--shadow-xl); padding: 8px 0; overflow: hidden; position: relative; }
+        .stat-cell { text-align: center; padding: 24px 16px; position: relative; }
+        .stat-number { font-weight: 900; font-size: 2.2rem; line-height: 1; background: linear-gradient(135deg, var(--indigo), var(--teal)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .stat-label { display: block; margin-top: 6px; font-size: .76rem; font-weight: 700; color: var(--navy-600); }
+
+        .section-badge-animated {
+            display: inline-flex; align-items: center; gap: 8px; padding: 8px 20px; border-radius: 100px;
+            font-size: 0.75rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 16px;
+        }
+        .section-title-xl { font-size: clamp(1.7rem, 4vw, 2.5rem); font-weight: 900; line-height: 1.15; letter-spacing: -0.5px; }
+
+        .program-card { position: relative; border-radius: 24px; overflow: hidden; height: 100%; transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease); cursor: pointer; }
+        .program-card:hover { transform: translateY(-12px) scale(1.02); box-shadow: 0 30px 70px rgba(0,0,0,.14); }
+        .program-card-inner { background: #ffffff; border-radius: 24px; padding: 36px 30px 32px; height: 100%; border: 1.5px solid rgba(255,255,255,0.9); box-shadow: 0 8px 30px rgba(79,70,229,.12); }
+
+        .center-card { background: var(--surface); border-radius: 18px; padding: 18px 20px; display: flex; align-items: center; gap: 14px; height: 100%; transition: all .35s var(--ease); cursor: pointer; border: 1.5px solid var(--border); }
+        .center-card:hover { border-color: rgba(79,70,229,.3); transform: translateX(6px); box-shadow: var(--shadow-md); }
+
+        .requirement-card { background: #ffffff; border-radius: 24px; padding: 32px 26px 28px; height: 100%; transition: all .45s var(--ease); border: 1.5px solid rgba(255,255,255,.8); box-shadow: 0 4px 20px rgba(0,0,0,.05); }
+        .requirement-card:hover { transform: translateY(-10px); box-shadow: 0 20px 50px rgba(79,70,229,.14); }
+
+        .step-timeline-item { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 10px; cursor: pointer; }
+        .step-badge-new { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, var(--indigo), #7c3aed); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(79,70,229,.35); border: 4px solid #fff; }
+        .step-card-new { background: #ffffff; border-radius: 18px; padding: 20px 16px; border: 1.5px solid var(--border); box-shadow: var(--shadow-sm); }
+
+        .why-card { background: rgba(255, 255, 255, 0.7); border: 1.5px solid rgba(255, 255, 255, 0.8); border-radius: 20px; padding: 24px 22px; height: 100%; transition: all 0.4s var(--ease); backdrop-filter: blur(8px); }
+        .why-card:hover { transform: translateY(-8px); background: rgba(255, 255, 255, 0.9); box-shadow: 0 20px 40px rgba(79, 70, 229, 0.12); }
+
+        .faq-accordion .accordion-item { border: 1.5px solid rgba(79,70,229,.1) !important; border-radius: var(--radius-md) !important; margin-bottom: 12px; overflow: hidden; background: #fff; }
+        .faq-accordion .accordion-button { font-weight: 700; color: var(--navy-900); padding: 20px 24px; background: #fff; }
+
+        .contact-info-card { display: flex; align-items: flex-start; gap: 16px; padding: 18px; border-radius: 16px; margin-bottom: 12px; border: 1.5px solid var(--border); background: var(--surface-2); }
+
+        /* ══════════════════════════════════════════════════════════
+           SMARTPHONE VIDEO MOCKUP FRAME
+           ══════════════════════════════════════════════════════════ */
+        .phone-mockup-container { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 0; width: 100%; }
+        .phone-mockup-device {
+            position: relative; width: 220px; height: 420px; background: #090d16;
+            border-radius: 36px; border: 8px solid #1e293b;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 0 2px rgba(255, 255, 255, 0.12), inset 0 0 12px rgba(0, 0, 0, 0.9);
+            overflow: hidden; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease; margin: 0 auto;
+        }
+        .phone-mockup-device:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 30px 65px rgba(0, 0, 0, 0.75), 0 0 25px rgba(99, 102, 241, 0.3); }
+        .phone-notch-bar { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 90px; height: 18px; background: #0f172a; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; z-index: 15; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .phone-notch-bar .speaker-slot { width: 28px; height: 3px; background: #334155; border-radius: 3px; }
+        .phone-notch-bar .camera-lens { width: 7px; height: 7px; background: #020617; border-radius: 50%; border: 1px solid #1e293b; }
+        .phone-screen-area { position: relative; width: 100%; height: 100%; overflow: hidden; background: #000; }
+        .phone-screen-video-el { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .phone-screen-notice {
+            position: absolute; top: 26px; left: 8px; right: 8px; background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1.5px solid rgba(245, 158, 11, 0.5);
+            border-radius: 14px; padding: 9px 11px; z-index: 12; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        .phone-screen-bottom-bar { position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); width: 80px; height: 4px; background: rgba(255, 255, 255, 0.7); border-radius: 4px; z-index: 14; }
+
+        #back-to-top {
+            position: fixed; bottom: 28px; right: 28px; width: 48px; height: 48px; border-radius: 50%;
+            background: var(--grad-primary); color: #fff; border: none; box-shadow: var(--shadow-glow-primary);
+            display: flex; align-items: center; justify-content: center; font-size: 1.3rem; cursor: pointer; z-index: 1000;
+            opacity: 0; visibility: hidden; transition: all .3s var(--ease);
+        }
+        #back-to-top.show { opacity: 1; visibility: visible; }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg sticky-top bg-white shadow-sm p-0" id="main-nav" style="z-index: 1030;">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2 py-0" href="#home-section">
+                <div class="nav-logo-icon-wrapper" style="width: 50px; height: 50px; flex-shrink: 0; background: #fff; padding: 0;">
+                    <svg viewBox="0 0 200 200" class="als-logo-svg" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
+                      <defs><path id="logoTextPathNav" d="M 100, 100 m -73, 0 a 73,73 0 1,1 146,0 a 73,73 0 1,1 -146,0" /></defs>
+                      <circle cx="100" cy="100" r="92" fill="none" stroke="#0d6efd" stroke-width="2.5" opacity="0.8" />
+                      <circle cx="100" cy="100" r="82" fill="none" stroke="#198754" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.6" />
+                      <circle cx="100" cy="100" r="62" fill="#ffffff" stroke="rgba(15, 23, 42, 0.08)" stroke-width="1" />
+                      <text font-family="'Plus Jakarta Sans', sans-serif" font-size="9.2" font-weight="800" fill="#0f172a" letter-spacing="0.5">
+                        <textPath href="#logoTextPathNav" startOffset="0%">ALTERNATIVE LEARNING SYSTEM • CULABA DISTRICT • DIVISION OF BILIRAN •</textPath>
+                      </text>
+                      <g transform="translate(97, 95)">
+                        <circle cx="-28" cy="-28" r="4.5" fill="#009e49" /><circle cx="-16" cy="-28" r="4.5" fill="#003ca5" /><circle cx="-4" cy="-28" r="4.5" fill="#e50012" />
+                        <text x="-6" y="24" font-family="'Arial Black', sans-serif" font-weight="900" font-size="52" fill="#009e49">L</text>
+                        <text x="-38" y="24" font-family="'Arial Black', sans-serif" font-weight="900" font-size="52" fill="#e50012">A</text>
+                        <text x="14" y="24" font-family="'Arial Black', sans-serif" font-weight="900" font-size="52" fill="#003ca5">S</text>
+                      </g>
+                    </svg>
+                </div>
+                <div class="py-2" style="font-size: 1.15rem;">
+                    <strong class="d-block lh-1">ALS Culaba</strong>
+                    <span class="d-none d-sm-block text-secondary mt-1" style="font-size: 0.95rem; font-weight: 500;">District Enrollment System</span>
+                </div>
+            </a>
+            <button class="navbar-toggler border-0 p-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon" style="transform: scale(0.85);"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-0" style="font-size: 0.85rem; font-weight: 600;">
+                    <li class="nav-item"><a class="nav-link active" href="#home-section">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about-als">About ALS</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#programs">Programs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#als-centers">Centers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#faq-section">FAQs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#enrollment-process">Process</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact-section">Contact</a></li>
+                </ul>
+                <div class="d-flex align-items-center gap-3 py-2">
+                    <button type="button" id="navbar-login-btn" onclick="openLearnerLogin()" class="btn btn-primary px-3 py-1 text-white" style="font-size: 0.8rem; border-radius: 20px; font-weight: 700; border: none; cursor: pointer; display:inline-flex; align-items:center; gap:6px;">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section id="home-section">
+        <div class="hero-mesh" style="z-index: 2; opacity: 0.25;"></div>
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6" data-aos="fade-right">
+                    <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+                        <div class="als-hero-logo-wrapper" style="position: relative; width: 100px; height: 100px; flex-shrink: 0;">
+                            <div class="logo-placeholder" data-slot="home" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></div>
+                            <div id="flying-logo" style="position: absolute; top: 0; left: 0; width: 100px; height: 100px; z-index: 2;">
+                                <svg viewBox="0 0 200 200" class="als-logo-svg" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
+                                  <defs><path id="logoTextPathHero" d="M 100, 100 m -73, 0 a 73,73 0 1,1 146,0 a 73,73 0 1,1 -146,0" /></defs>
+                                  <circle cx="100" cy="100" r="92" fill="none" stroke="#0d6efd" stroke-width="2.5" opacity="0.8" />
+                                  <circle cx="100" cy="100" r="82" fill="none" stroke="#198754" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.6" />
+                                  <circle cx="100" cy="100" r="62" fill="#ffffff" stroke="rgba(15, 23, 42, 0.08)" stroke-width="1" />
+                                  <text font-family="'Plus Jakarta Sans', sans-serif" font-size="9.2" font-weight="800" fill="#0f172a" letter-spacing="0.5">
+                                    <textPath href="#logoTextPathHero" startOffset="0%">ALTERNATIVE LEARNING SYSTEM • CULABA DISTRICT • DIVISION OF BILIRAN •</textPath>
+                                  </text>
+                                  <g transform="translate(97, 95)">
+                                    <circle cx="-28" cy="-28" r="4.5" fill="#009e49" /><circle cx="-16" cy="-28" r="4.5" fill="#003ca5" /><circle cx="-4" cy="-28" r="4.5" fill="#e50012" />
+                                    <text x="-6" y="24" font-family="'Arial Black', sans-serif" font-weight="900" font-size="52" fill="#009e49">L</text>
+                                    <text x="-38" y="24" font-family="'Arial Black', sans-serif" font-weight="900" font-size="52" fill="#e50012">A</text>
+                                    <text x="14" y="24" font-family="'Arial Black', sans-serif" font-weight="900" font-size="52" fill="#003ca5">S</text>
+                                  </g>
+                                </svg>
+                            </div>
+                        </div>
+                        <h1 class="lh-sm mb-0" style="font-size: 1.85rem; font-weight: 900; color: #fff;">
+                            Alternative Learning System (ALS)<br>
+                            <span class="grad-text-accent" id="typeTarget"></span>
+                        </h1>
+                    </div>
+                    <h5 class="fw-semibold mb-3 lh-base fs-6" style="color: rgba(255,255,255,.6);">
+                        "Mag-aral Muli. Abutin ang Pangarap. Baguhin ang Kinabukasan sa Culaba."
+                    </h5>
+                    <p style="color: rgba(255,255,255,.65); margin-bottom: 1.5rem; font-size: .97rem; line-height: 1.75;">
+                        Ang Alternative Learning System (ALS) ay isang programang pang-edukasyon ng pamahalaan para sa mga Pilipinong hindi nakapagtapos ng pormal na pag-aaral. Sa pamamagitan ng ALS Culaba District, maaari kang makapagpatuloy ng pag-aaral ug makab-ot ang imong mga damgo sa kinabuhi.
+                    </p>
+                    <div class="d-flex flex-wrap align-items-center gap-3 hero-actions">
+                        <a href="javascript:void(0)" id="hero-apply-btn" class="btn-primary-custom" onclick="openModal()">
+                            <i class="bi bi-arrow-right-circle-fill fs-5"></i> Mag Apply Ngayon
+                        </a>
+                        <a href="#about-als" class="btn-secondary-custom">
+                            <i class="bi bi-info-circle-fill"></i> Alamin Pa
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-6" data-aos="fade-left">
+                    <div class="hero-portal-container mt-4 mt-lg-0">
+                        <div class="hero-image-frame hover-lift">
+                            <video autoplay muted loop playsinline class="d-block w-100 h-100">
+                                <source src="assets/animation_wheel.webm" type="video/webm">
+                            </video>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- STATS STRIP -->
+    <section id="stats-strip">
+        <div class="container">
+            <div class="stats-panel" data-aos="fade-up">
+                <div class="row g-0">
+                    <div class="col-6 col-md-3 stat-cell">
+                        <span class="stat-number" data-count="10">0</span>
+                        <span class="stat-label">ALS Learning Centers</span>
+                    </div>
+                    <div class="col-6 col-md-3 stat-cell">
+                        <span class="stat-number" data-count="350">0</span>
+                        <span class="stat-label">Aktibong Mag-aaral</span>
+                    </div>
+                    <div class="col-6 col-md-3 stat-cell">
+                        <span class="stat-number" data-count="92" data-suffix="%">0%</span>
+                        <span class="stat-label">Passing Rate sa A&E Test</span>
+                    </div>
+                    <div class="col-6 col-md-3 stat-cell">
+                        <span class="stat-number" data-count="100" data-suffix="%">0%</span>
+                        <span class="stat-label">Libre at Walang Bayad</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT ALS -->
+    <section id="about-als" class="py-5 position-relative">
+        <div class="container py-5 position-relative" style="z-index:1;">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-5" data-aos="fade-right">
+                    <div class="about-img-container">
+                        <img src="assets/als_classroom_payag.jpg" alt="Klase sa ALS" class="img-fluid w-100 about-img-new" style="border-radius:22px;object-fit:cover;height:400px;border:4px solid #fff;box-shadow:0 12px 40px rgba(0,0,0,.1);">
+                    </div>
+                </div>
+                <div class="col-lg-7" data-aos="fade-left">
+                    <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
+                        <div class="logo-placeholder" data-slot="about"></div>
+                        <div class="section-badge-animated" style="background:rgba(13,148,136,.08);color:var(--teal);margin-bottom:0;">
+                            Alamin Natin
+                        </div>
+                    </div>
+                    <h2 class="section-title-xl mb-3">Ano ang <span class="grad-text">Alternative Learning System?</span></h2>
+                    <div class="text-secondary" style="font-size: 1.02rem; line-height: 1.85;">
+                        <p class="mb-3">
+                            Ang Alternative Learning System (ALS) ay isang paralelong sistema ng edukasyon sa Pilipinas na nagbibigay ng pagkakataon sa mga hindi nakakapag-aral o hindi nakatapos sa pormal na paaralan. Layunin nitong buksan ang pintuan ng karunungan para sa bawat Pilipino, anuman ang kanilang katayuan o edad sa buhay.
+                        </p>
+                        <p class="mb-0">
+                            Sa pamamagitan ng mga modyul at gabay ng mga dedikadong Mobile Teachers sa iba't ibang Learning Centers, ang mga mag-aaral ay ginagabayan upang maging handa sa Accreditation and Equivalency (A&E) Test.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ENROLLMENT PROCESS -->
+    <section id="enrollment-process" class="py-5 position-relative">
+        <div class="container py-5">
+            <div class="text-center mb-5" data-aos="fade-up">
+                <div class="section-badge-animated" style="background:rgba(13,148,136,.1);color:var(--teal);">
+                    <span>🗺️</span> Enrollment Steps
+                </div>
+                <h2 class="section-title-xl mb-3">Proseso ng <span class="underline-word grad-text-accent">Pag-enroll</span></h2>
+                <p class="text-secondary mx-auto" style="max-width:580px;font-size:.95rem;line-height:1.7;">Napakadali at simpleng paraan upang simulan ang iyong pag-aaral sa ALS. 5 hakbang lang!</p>
+            </div>
+
+            <div class="step-timeline d-lg-flex gap-lg-0 gap-4">
+                <div class="step-timeline-item" data-aos="fade-up" data-aos-delay="100" onclick="openModal()">
+                    <div class="step-badge-new"><i class="bi bi-mouse"></i></div>
+                    <div class="step-card-new">
+                        <h6 class="fw-bold mb-2" style="color:var(--navy-900);font-size:.9rem;">Pindutin ang "Mag Apply"</h6>
+                        <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">I-click ang Apply Now button sa website.</p>
+                    </div>
+                </div>
+                <div class="step-timeline-item" data-aos="fade-up" data-aos-delay="200" onclick="openModal()">
+                    <div class="step-badge-new s-teal"><i class="bi bi-pencil-square"></i></div>
+                    <div class="step-card-new">
+                        <h6 class="fw-bold mb-2" style="color:var(--navy-900);font-size:.9rem;">Punan ang Form</h6>
+                        <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">Ilagay ang iyong kumpletong impormasyon.</p>
+                    </div>
+                </div>
+                <div class="step-timeline-item" data-aos="fade-up" data-aos-delay="300" onclick="openModal()">
+                    <div class="step-badge-new s-violet"><i class="bi bi-send-fill"></i></div>
+                    <div class="step-card-new">
+                        <h6 class="fw-bold mb-2" style="color:var(--navy-900);font-size:.9rem;">I-submit ang Application</h6>
+                        <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">Suriing mabuti bago ipadala sa amin.</p>
+                    </div>
+                </div>
+                <div class="step-timeline-item" data-aos="fade-up" data-aos-delay="400" onclick="openModal()">
+                    <div class="step-badge-new s-amber"><i class="bi bi-envelope-paper-fill"></i></div>
+                    <div class="step-card-new border-warning">
+                        <h6 class="fw-bold mb-2" style="color:var(--navy-900);font-size:.9rem;">Tanggapin ang Email Credentials</h6>
+                        <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">Hintayin ang email message para sa iyong username at password.</p>
+                    </div>
+                </div>
+                <div class="step-timeline-item" data-aos="fade-up" data-aos-delay="500" onclick="openModal()">
+                    <div class="step-badge-new s-rose"><i class="bi bi-box-arrow-in-right"></i></div>
+                    <div class="step-card-new">
+                        <h6 class="fw-bold mb-2" style="color:var(--navy-900);font-size:.9rem;">I-login at Simulan ang ALS Journey!</h6>
+                        <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">Gamitin ang credentials sa email para maka-login sa portal.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CALL TO ACTION -->
+    <section class="py-5" style="background: transparent;">
+        <div class="container" data-aos="zoom-in">
+            <div id="cta-section" style="background: #ffffff; border-radius: 32px; padding: 48px; box-shadow: 0 20px 60px rgba(15,23,42,0.06); border: 1px solid rgba(15,23,42,0.05); text-align: left;">
+                <div class="row align-items-center g-4 g-lg-5">
+                    <div class="col-lg-6">
+                        <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill mb-3" style="background: rgba(99, 102, 241, 0.09); color: #4f46e5; font-size: 0.78rem; font-weight: 800;">
+                            <i class="bi bi-mortarboard-fill"></i> START YOUR JOURNEY
+                        </div>
+                        <h2 class="display-5 text-navy mb-3" style="font-weight: 850; line-height: 1.15;">
+                            Are You Ready to<br>Start Your <span style="color: #6366f1;">Dream?</span>
+                        </h2>
+                        <p class="text-secondary mb-4" style="font-size: 0.95rem; line-height: 1.7;">
+                            Enroll today and be part of the Alternative Learning System. Free, flexible, and designed for you!
+                        </p>
+                        <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
+                            <a href="javascript:void(0)" class="btn text-white fw-bold px-4 py-3 rounded-pill shadow-sm d-inline-flex align-items-center gap-2 hover-lift" onclick="openModal()" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); font-size: 0.92rem; border: none;">
+                                <i class="bi bi-send-fill" style="transform: rotate(-30deg);"></i> Apply Now
+                            </a>
+                            <a href="javascript:void(0)" onclick="openModal()" class="btn fw-bold px-4 py-3 rounded-pill d-inline-flex align-items-center gap-2 hover-lift" style="border: 1.5px solid rgba(99, 102, 241, 0.4); color: #4f46e5; font-size: 0.92rem; background: #ffffff;">
+                                <i class="bi bi-journal-text"></i> How to Apply
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="position-relative overflow-hidden shadow-lg hover-lift" style="border-radius: 28px; border: 4px solid #ffffff; height: 360px; width: 100%;">
+                            <img src="assets/Alternative_Learnning_system.png" alt="ALS Learning Center Building" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="py-5 text-white-50" style="background: #09122b; border-top: 3px solid #6366f1;">
+        <div class="container py-4">
+            <div class="row g-4 mb-4">
+                <div class="col-lg-4">
+                    <a href="#home-section" class="d-flex align-items-center gap-2 mb-3 text-white text-decoration-none">
+                        <div style="width: 40px; height: 40px; background: #fff; border-radius: 50%; padding: 2px;">
+                            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
+                              <circle cx="100" cy="100" r="92" fill="none" stroke="#0d6efd" stroke-width="2.5" />
+                              <g transform="translate(97, 95)">
+                                <circle cx="-28" cy="-28" r="4.5" fill="#009e49" /><circle cx="-16" cy="-28" r="4.5" fill="#003ca5" /><circle cx="-4" cy="-28" r="4.5" fill="#e50012" />
+                                <text x="-6" y="24" font-family="'Arial Black', sans-serif" font-weight="900" font-size="52" fill="#009e49">L</text>
+                                <text x="-38" y="24" font-family="'Arial Black', sans-serif" font-weight="900" font-size="52" fill="#e50012">A</text>
+                                <text x="14" y="24" font-family="'Arial Black', sans-serif" font-weight="900" font-size="52" fill="#003ca5">S</text>
+                              </g>
+                            </svg>
+                        </div>
+                        <span class="fw-bold fs-5 text-white">ALS Culaba</span>
+                    </a>
+                    <p class="small mb-0 text-white-50">Empowering communities through accessible education in Culaba, Biliran.</p>
+                </div>
+                <div class="col-lg-8 text-lg-end">
+                    <span class="small text-white-50">© 2026 ALS Culaba District Enrollment System. All rights reserved.</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top -->
+    <button id="back-to-top" aria-label="Back to top" onclick="scrollToTop()">
+        <i class="bi bi-arrow-up-short"></i>
+    </button>
+
+    <!-- HOW TO APPLY PROCESS MODAL WITH SMARTPHONE MOCKUP FRAME -->
+    <div class="modal fade" id="howToApplyModal" tabindex="-1" aria-labelledby="howToApplyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered" style="max-width: 920px;">
+            <div class="modal-content border-0" style="border-radius: 28px; overflow: hidden; box-shadow: 0 40px 100px rgba(0,0,0,.18);">
+
+                <div class="modal-header border-0 px-4 py-3" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%); position: relative; overflow: hidden;">
+                    <div class="d-flex align-items-center gap-3" style="position:relative;z-index:2;">
+                        <div style="width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">
+                            <i class="bi bi-play-circle-fill" style="color:#a5b4fc;"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0" id="howToApplyModalLabel" style="color:#fff;font-size:1.05rem;">Paano Mag-Apply sa ALS?</h5>
+                            <span style="font-size:.75rem;color:rgba(255,255,255,.55);font-weight:600;">Sundan ang mga hakbang sa ibaba para sa application at login</span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal" aria-label="Close" style="opacity:.6;position:relative;z-index:2;"></button>
+                </div>
+
+                <div class="modal-body p-0" style="background: linear-gradient(160deg, #f0f4ff 0%, #e8fdf5 50%, #f5f0ff 100%);">
+                    <div class="row g-0" style="min-height: 480px;">
+
+                        <!-- LEFT: Phone Mockup Video Panel -->
+                        <div class="col-lg-5 d-flex flex-column justify-content-between p-4" style="background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%); position: relative; overflow: hidden; min-height: 480px;">
+                            <div style="position:relative;z-index:2;" class="w-100">
+                                <div class="d-flex justify-content-center mb-3">
+                                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill" style="background:rgba(99,102,241,.25);border:1px solid rgba(99,102,241,.4);">
+                                        <i class="bi bi-phone-vibrate-fill text-warning fs-6"></i>
+                                        <span style="font-size:.72rem;font-weight:800;color:#5eead4;letter-spacing:.8px;">LEARNER MOBILE APP & TUTORIAL</span>
+                                    </div>
+                                </div>
+
+                                <!-- Smartphone Device Frame -->
+                                <div class="phone-mockup-container">
+                                    <div class="phone-mockup-device">
+                                        <div class="phone-notch-bar">
+                                            <div class="speaker-slot"></div>
+                                            <div class="camera-lens"></div>
+                                        </div>
+                                        <div class="phone-screen-area">
+                                            <video autoplay muted loop playsinline class="phone-screen-video-el">
+                                                <source src="assets/animation_wheel.webm" type="video/webm">
+                                            </video>
+                                            <div class="phone-screen-notice">
+                                                <div class="d-flex align-items-start gap-2 mb-1">
+                                                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 24px; height: 24px; background: rgba(245, 158, 11, 0.25); color: #fbbf24; font-size: 0.75rem;">
+                                                        <i class="bi bi-envelope-fill"></i>
+                                                    </div>
+                                                    <div>
+                                                        <span class="badge bg-warning text-dark fw-bold" style="font-size: 0.58rem;">IMPORTANT</span>
+                                                        <div class="fw-bold text-white" style="font-size: 0.74rem; line-height: 1.2;">Wait for Email Credentials!</div>
+                                                    </div>
+                                                </div>
+                                                <p class="text-white-50 mb-0" style="font-size: 0.66rem; line-height: 1.35;">
+                                                    Check your email for account Username & Password after applying.
+                                                </p>
+                                            </div>
+                                            <div class="phone-screen-bottom-bar"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="position:relative;z-index:2;" class="text-center pt-2">
+                                <h6 style="color:#fff;font-size:0.92rem;font-weight:800;margin-bottom:4px;">Simulan ang Iyong Pag-aaral sa ALS</h6>
+                                <p style="color:rgba(255,255,255,.65);font-size:.78rem;line-height:1.45;margin:0;">Sundan ang 5 ka simpleng hakbang sa kanan para sa online registration at pag-login.</p>
+                            </div>
+                        </div>
+
+                        <!-- RIGHT: Steps panel -->
+                        <div class="col-lg-7 d-flex flex-column p-4" style="overflow-y:auto;max-height:520px;">
+                            <p class="fw-bold mb-4" style="color:#475569;font-size:.82rem;text-transform:uppercase;letter-spacing:1.2px;">Mga Hakbang sa Pag-apply at Pag-login</p>
+
+                            <!-- Step 1 -->
+                            <div class="d-flex gap-3 mb-3 p-3 rounded-3" style="background:#fff;border:1.5px solid rgba(99,102,241,.12);box-shadow:0 2px 8px rgba(0,0,0,.04);">
+                                <div style="width:44px;height:44px;min-width:44px;border-radius:14px;background:linear-gradient(135deg,#6366f1,#4f46e5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.15rem;">
+                                    <i class="bi bi-pencil-square"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight:800;color:#0f172a;font-size:.92rem;margin-bottom:3px;">Hakbang 1: Mag-fill out ng Application Form</div>
+                                    <div style="font-size:.8rem;color:#64748b;line-height:1.55;">I-click ang "Mag Apply Ngayon" para ma-access ang online application form. Kumpletuhin ang lahat ng kinakailangang impormasyon.</div>
+                                </div>
+                            </div>
+
+                            <!-- Step 2 -->
+                            <div class="d-flex gap-3 mb-3 p-3 rounded-3" style="background:#fff;border:1.5px solid rgba(13,148,136,.12);box-shadow:0 2px 8px rgba(0,0,0,.04);">
+                                <div style="width:44px;height:44px;min-width:44px;border-radius:14px;background:linear-gradient(135deg,#0d9488,#0ea5e9);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.15rem;">
+                                    <i class="bi bi-cloud-upload-fill"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight:800;color:#0f172a;font-size:.92rem;margin-bottom:3px;">Hakbang 2: I-submit ang mga Dokumento</div>
+                                    <div style="font-size:.8rem;color:#64748b;line-height:1.55;">I-upload ang mga kinakailangang dokumento tulad ng PSA Birth Certificate, ID photo, at iba pa.</div>
+                                </div>
+                            </div>
+
+                            <!-- Step 3 -->
+                            <div class="d-flex gap-3 mb-3 p-3 rounded-3" style="background:#fff;border:1.5px solid rgba(99,102,241,.12);box-shadow:0 2px 8px rgba(0,0,0,.04);">
+                                <div style="width:44px;height:44px;min-width:44px;border-radius:14px;background:linear-gradient(135deg,#6366f1,#7c3aed);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.15rem;">
+                                    <i class="bi bi-hourglass-split"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight:800;color:#0f172a;font-size:.92rem;margin-bottom:3px;">Hakbang 3: Antayin ang Pagsusuri ng Application</div>
+                                    <div style="font-size:.8rem;color:#64748b;line-height:1.55;">Matapos i-submit ang iyong application, antayin ang pagsusuri ng iyong Mobile Teacher o ALS Coordinator.</div>
+                                </div>
+                            </div>
+
+                            <!-- Step 4 — EMAIL HIGHLIGHT -->
+                            <div class="d-flex gap-3 mb-3 p-3 rounded-3" style="background:linear-gradient(135deg,rgba(99,102,241,.08) 0%,rgba(245,158,11,.08) 100%);border:2px solid rgba(245,158,11,.35);box-shadow:0 6px 20px rgba(245,158,11,.12);">
+                                <div style="width:46px;height:46px;min-width:46px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2rem;">
+                                    <i class="bi bi-envelope-paper-fill"></i>
+                                </div>
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                        <span style="font-weight:800;color:#0f172a;font-size:.93rem;">Hakbang 4: Hintayin ang Email para sa Account Credentials</span>
+                                        <span class="badge bg-warning text-dark fw-bold" style="font-size: 0.65rem;">Wait for Email</span>
+                                    </div>
+                                    <div style="font-size:.82rem;color:#334155;line-height:1.65;" class="mb-2">
+                                        Kapag na-verify na ang iyong application, makakatanggap ka ng <strong style="color:#d97706;">email message</strong> na naglalaman ng iyong official <strong style="color:#4f46e5;">account credentials (Username & Password)</strong>.
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2 px-3 py-2 rounded-3" style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);">
+                                        <i class="bi bi-exclamation-triangle-fill" style="color:#d97706;font-size:.9rem;flex-shrink:0;"></i>
+                                        <span style="font-size:.78rem;font-weight:700;color:#b45309;">Siguraduhing tama at aktibo ang email address na ilalagay sa form!</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 5 — LOGIN PROCESS -->
+                            <div class="d-flex gap-3 p-3 rounded-3" style="background:linear-gradient(135deg,rgba(16,185,129,.06) 0%,rgba(13,148,136,.06) 100%);border:2px solid rgba(16,185,129,.3);">
+                                <div style="width:46px;height:46px;min-width:46px;border-radius:14px;background:linear-gradient(135deg,#10b981,#0d9488);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2rem;">
+                                    <i class="bi bi-box-arrow-in-right"></i>
+                                </div>
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                        <span style="font-weight:800;color:#0f172a;font-size:.93rem;">Hakbang 5: I-login ang iyong Account</span>
+                                        <span class="badge bg-success fw-bold" style="font-size: 0.65rem;">Login Process</span>
+                                    </div>
+                                    <div style="font-size:.82rem;color:#475569;line-height:1.6;">
+                                        Pagka-receive ng iyong email credentials, i-click ang <strong style="color:#0d9488;">"Login na"</strong> button upang ilagay ang iyong Username at Password sa Learner Portal at ma-access ang iyong dashboard.
+                                    </div>
+                                    <div class="mt-2">
+                                        <button type="button" class="btn btn-sm text-white fw-bold px-3 py-1.5 rounded-2 d-inline-flex align-items-center gap-1.5 shadow-sm" onclick="proceedToLearnerLogin()" style="background:linear-gradient(135deg,#10b981,#0d9488);font-size:.78rem;border:none;">
+                                            <i class="bi bi-box-arrow-in-right"></i> Pumunta sa Login Form
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-0 px-4 py-3 d-flex align-items-center gap-2 flex-wrap" style="background:#f8fafc;">
+                    <div class="me-auto d-flex align-items-center gap-2" style="font-size:.78rem;color:#64748b;font-weight:600;">
+                        <i class="bi bi-info-circle-fill" style="color:#6366f1;"></i> Libre ang pag-apply. Walang bayad.
+                    </div>
+                    <button type="button" class="btn fw-bold px-4 py-2" data-bs-dismiss="modal" style="border-radius:12px;border:1.5px solid rgba(99,102,241,.3);color:#4f46e5;font-size:.87rem;background:#fff;">
+                        <i class="bi bi-x-circle"></i> Isara
+                    </button>
+                    <button type="button" class="btn fw-bold px-4 py-2" onclick="proceedToLearnerLogin()" style="border-radius:12px;background:linear-gradient(135deg,#10b981,#0d9488);color:#fff;border:none;font-size:.87rem;">
+                        <i class="bi bi-box-arrow-in-right"></i> Login na
+                    </button>
+                    <button type="button" class="btn fw-bold px-4 py-2" id="howToApplyProceedBtn" style="border-radius:12px;background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;border:none;font-size:.87rem;">
+                        <i class="bi bi-send-fill"></i> Mag Apply Ngayon
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- APPLICATION MODAL -->
+    <div class="modal fade" id="applyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 28px; overflow: hidden;">
+                <div class="modal-body p-0" style="height: 85vh; background: #f8fafc;">
+                    <iframe src="students_apply.php?iframe=1" style="width: 100%; height: 100%; border: none;" id="applyIframe"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LEARNER LOGIN OVERLAY MODAL -->
+    <div id="learnerLoginOverlay" onclick="closeLearnerLoginOnOverlay(event)" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.75);backdrop-filter:blur(10px);z-index:2000;align-items:center;justify-content:center;padding:16px;">
+        <div style="background:#fff;border-radius:24px;width:100%;max-width:440px;box-shadow:0 25px 60px rgba(0,0,0,.3);overflow:hidden;position:relative;animation:learnerSlideUp .3s ease-out;">
+            <div style="background:linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);padding:28px 24px;color:#fff;position:relative;">
+                <button type="button" onclick="closeLearnerLogin()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,.15);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;">✕</button>
+                <div style="width:50px;height:50px;border-radius:16px;background:rgba(255,255,255,.18);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:12px;">
+                    <i class="bi bi-mortarboard-fill"></i>
+                </div>
+                <h4 style="font-size:1.25rem;font-weight:900;margin-bottom:4px;" id="learnerModalTitle">Learner Portal Login</h4>
+                <p style="font-size:.82rem;color:rgba(255,255,255,.75);margin:0;" id="learnerModalSubtitle">Enter your credentials sent to your email to continue</p>
+            </div>
+
+            <div style="padding:24px;">
+                <div id="learnerLoginAlert" style="display:none;padding:12px;border-radius:10px;font-size:13px;margin-bottom:16px;"></div>
+
+                <div id="learnerLoginFormView">
+                    <form id="learnerLoginForm" action="login.php" method="POST">
+                        <div style="margin-bottom:16px;">
+                            <label style="display:block;font-size:11.5px;font-weight:800;color:#334155;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;">
+                                <i class="bi bi-envelope-fill" style="color:#2563eb;"></i> Email / Username
+                            </label>
+                            <input type="text" id="learnerEmail" name="email" placeholder="yourname@gmail.com" required style="width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;outline:none;background:#f8fafc;">
+                        </div>
+                        <div style="margin-bottom:18px;">
+                            <label style="display:block;font-size:11.5px;font-weight:800;color:#334155;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;">
+                                <i class="bi bi-lock-fill" style="color:#7c3aed;"></i> Password
+                            </label>
+                            <input type="password" id="learnerPassword" name="password" placeholder="••••••••" required style="width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;outline:none;background:#f8fafc;">
+                        </div>
+                        <button type="submit" style="width:100%;padding:13px;background:linear-gradient(135deg, #1e3a8a 0%, #7c3aed 60%, #2563eb 100%);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(37,99,235,.35);">
+                            <i class="bi bi-box-arrow-in-right"></i> Login to Learner Portal
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT BUNDLE -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <script>
+        const isEnrollmentOpen = true;
+        AOS.init({ duration: 800, easing: 'ease-out-cubic', once: true, offset: 80 });
+
+        // Typewriter Effect
+        const typeLines = [
+            'Enrollment Management System',
+            'Education For All Filipinos',
+            'Learn at Your Own Pace',
+            'Your Future Starts Here'
+        ];
+        let tli = 0, tci = 0, deleting = false;
+        const typeEl = document.getElementById('typeTarget');
+        function typeWriter() {
+            const line = typeLines[tli];
+            if (!deleting) {
+                typeEl.textContent = line.slice(0, ++tci);
+                if (tci === line.length) { deleting = true; setTimeout(typeWriter, 1800); return; }
+            } else {
+                typeEl.textContent = line.slice(0, --tci);
+                if (tci === 0) { deleting = false; tli = (tli + 1) % typeLines.length; setTimeout(typeWriter, 300); return; }
+            }
+            setTimeout(typeWriter, deleting ? 45 : 70);
+        }
+        if (typeEl) typeWriter();
+
+        // Stats Counter
+        const statNumbers = document.querySelectorAll('.stat-number');
+        if (statNumbers.length) {
+            const animateCount = (el) => {
+                const target = parseInt(el.getAttribute('data-count'), 10) || 0;
+                const suffix = el.getAttribute('data-suffix') || '';
+                const duration = 1400; const startTime = performance.now();
+                function step(now) {
+                    const progress = Math.min((now - startTime) / duration, 1);
+                    const eased = 1 - Math.pow(1 - progress, 3);
+                    el.textContent = Math.floor(eased * target) + suffix;
+                    if (progress < 1) requestAnimationFrame(step);
+                    else el.textContent = target + suffix;
+                }
+                requestAnimationFrame(step);
+            };
+            const statObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) { animateCount(entry.target); statObserver.unobserve(entry.target); }
+                });
+            }, { threshold: 0.4 });
+            statNumbers.forEach(el => statObserver.observe(el));
+        }
+
+        // Flying Logo
+        const flyingLogo = document.getElementById('flying-logo');
+        if (flyingLogo) {
+            flyingLogo.style.position = 'fixed';
+            flyingLogo.style.pointerEvents = 'none';
+            document.body.appendChild(flyingLogo);
+        }
+
+        function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+        function openModal() {
+            const el = document.getElementById('howToApplyModal');
+            if (el) new bootstrap.Modal(el).show();
+        }
+
+        function openApplyFormModal() {
+            const howToApplyEl = document.getElementById('howToApplyModal');
+            const doOpen = () => {
+                const el = document.getElementById('applyModal');
+                if (el) new bootstrap.Modal(el).show();
+            };
+            if (howToApplyEl && howToApplyEl.classList.contains('show')) {
+                const howModal = bootstrap.Modal.getInstance(howToApplyEl);
+                if (howModal) howModal.hide();
+                howToApplyEl.addEventListener('hidden.bs.modal', doOpen, { once: true });
+            } else {
+                doOpen();
+            }
+        }
+
+        function proceedToLearnerLogin() {
+            const howToApplyEl = document.getElementById('howToApplyModal');
+            const doLogin = () => openLearnerLogin();
+            if (howToApplyEl && howToApplyEl.classList.contains('show')) {
+                const howModal = bootstrap.Modal.getInstance(howToApplyEl);
+                if (howModal) howModal.hide();
+                howToApplyEl.addEventListener('hidden.bs.modal', doLogin, { once: true });
+            } else {
+                doLogin();
+            }
+        }
+
+        function openLearnerLogin() {
+            const overlay = document.getElementById('learnerLoginOverlay');
+            if (overlay) { overlay.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        }
+        function closeLearnerLogin() {
+            const overlay = document.getElementById('learnerLoginOverlay');
+            if (overlay) { overlay.style.display = 'none'; document.body.style.overflow = ''; }
+        }
+        function closeLearnerLoginOnOverlay(e) {
+            if (e.target === document.getElementById('learnerLoginOverlay')) closeLearnerLogin();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('howToApplyProceedBtn');
+            if (btn) btn.addEventListener('click', openApplyFormModal);
+        });
+
+        window.addEventListener('scroll', () => {
+            const btt = document.getElementById('back-to-top');
+            if (window.scrollY > 300) btt.classList.add('show');
+            else btt.classList.remove('show');
+        });
+    </script>
+</body>
+</html>
